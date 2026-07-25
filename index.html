@@ -22,9 +22,11 @@
     --display: 'Space Grotesk', sans-serif;
     --body: 'Inter', sans-serif;
     --mono: 'JetBrains Mono', monospace;
+    --earth-d: min(52vw,620px);
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   html{scroll-behavior:smooth;}
+  html,body{max-width:100%;overflow-x:hidden;}
   @media (prefers-reduced-motion: reduce){
     html{scroll-behavior:auto;}
     *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
@@ -50,6 +52,9 @@
 
   /* ---------- layout helpers ---------- */
   section{position:relative;z-index:2;padding:140px 8vw;max-width:1440px;margin:0 auto;}
+  @media (max-width:700px){
+    section{padding:80px 6vw;}
+  }
   .eyebrow{
     font-family:var(--mono); font-size:12px; letter-spacing:0.28em; text-transform:uppercase;
     color:var(--blue); display:flex; align-items:center; gap:10px; margin-bottom:22px;
@@ -94,7 +99,28 @@
   .navlinks{display:flex; gap:34px; font-size:14px; color:var(--muted);}
   .navlinks a{transition:color .25s;}
   .navlinks a:hover{color:var(--text);}
-  @media (max-width:900px){.navlinks{display:none;}}
+  .nav-cta{white-space:nowrap;}
+  .hamburger{display:none; width:38px; height:38px; border-radius:8px; border:1px solid var(--panel-border); background:rgba(255,255,255,.03); cursor:pointer; align-items:center; justify-content:center; flex-direction:column; gap:5px;}
+  .hamburger span{width:16px; height:1.5px; background:var(--text); display:block; transition:all .3s ease;}
+  .hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+  .hamburger.open span:nth-child(2){opacity:0;}
+  .hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+  @media (max-width:900px){
+    .navlinks{
+      position:fixed; top:0; right:0; height:100vh; width:min(78vw,320px);
+      background:rgba(6,7,12,.85); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+      border-left:1px solid var(--panel-border);
+      flex-direction:column; gap:0; padding:100px 32px 32px;
+      transform:translateX(100%); transition:transform .4s cubic-bezier(.16,.8,.2,1);
+      z-index:55;
+    }
+    .navlinks.open{transform:translateX(0);}
+    .navlinks a{padding:16px 0; border-bottom:1px solid var(--panel-border); font-size:16px; color:var(--text);}
+    .hamburger{display:flex;}
+    .nav-cta{display:none;}
+  }
+  .nav-scrim{display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:54;}
+  .nav-scrim.open{display:block;}
 
   /* ---------- cursor ---------- */
   #cursorGlow{position:fixed; width:340px; height:340px; border-radius:50%; pointer-events:none; z-index:3;
@@ -104,10 +130,10 @@
 
   /* ---------- HERO ---------- */
   .hero{
-    height:100vh; min-height:720px; display:flex; flex-direction:column; justify-content:center;
+    height:100vh; height:100svh; min-height:600px; display:flex; flex-direction:column; justify-content:center;
     position:relative; padding:0 6vw; z-index:2; max-width:none;
   }
-  .earth-wrap{position:absolute; right:-6vw; top:50%; transform:translateY(-50%); width:min(52vw,620px); height:min(52vw,620px); z-index:1;}
+  .earth-wrap{position:absolute; right:-6vw; top:50%; transform:translateY(-50%); width:var(--earth-d, min(52vw,620px)); height:var(--earth-d, min(52vw,620px)); z-index:1;}
   .earth{
     width:100%; height:100%; border-radius:50%; position:relative;
     background:
@@ -127,14 +153,16 @@
   }
   @keyframes spin{from{background-position:0 0;} to{background-position:400px 0;}}
   .moon{
-    position:absolute; width:34px; height:34px; border-radius:50%;
+    position:absolute; width:clamp(16px,6.5%,34px); height:clamp(16px,6.5%,34px); border-radius:50%;
     background:radial-gradient(circle at 35% 35%, #cfd3da, #7c8291 70%);
     top:12%; left:-6%; box-shadow:0 0 18px rgba(255,255,255,.25);
     animation: orbitMoon 22s linear infinite;
+    --moon-r: calc(var(--earth-d) * 0.62);
+    transform-origin:0 0;
   }
   @keyframes orbitMoon{
-    from{transform:rotate(0deg) translateX(280px) rotate(0deg);}
-    to{transform:rotate(360deg) translateX(280px) rotate(-360deg);}
+    from{transform:rotate(0deg) translateX(var(--moon-r)) rotate(0deg);}
+    to{transform:rotate(360deg) translateX(var(--moon-r)) rotate(-360deg);}
   }
   .hero-copy{max-width:640px; position:relative; z-index:3;}
   .hero h1{
@@ -151,6 +179,17 @@
   .scroll-cue .line{width:1px; height:36px; background:linear-gradient(var(--faint),transparent); position:relative; overflow:hidden;}
   .scroll-cue .line::after{content:'';position:absolute; top:-100%; left:0; width:100%; height:60%; background:var(--blue); animation:cueDrop 2.2s ease-in-out infinite;}
   @keyframes cueDrop{0%{top:-60%;} 100%{top:110%;}}
+  @media (max-width:700px){
+    :root{--earth-d: min(78vw, 340px);}
+    .hero{padding:0 6vw; justify-content:flex-end; padding-bottom:70px;}
+    .earth-wrap{right:50%; top:16%; transform:translate(50%,0); opacity:.55; z-index:0;}
+    .hero-copy{max-width:100%;}
+    .hero h1{font-size:clamp(38px,11vw,54px);}
+    .hero .sub{font-size:15.5px;}
+    .hero-actions{flex-direction:column; align-items:stretch;}
+    .hero-actions .btn{justify-content:center;}
+    .scroll-cue{display:none;}
+  }
 
   /* ---------- MISSION CONTROL ---------- */
   .mc-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-top:56px;}
@@ -161,6 +200,7 @@
   .mission-card h3{font-family:var(--display); font-size:22px; font-weight:600; letter-spacing:.01em;}
   .status-pill{font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); display:flex; gap:7px; align-items:center;}
   .mstats{display:grid; grid-template-columns:repeat(2,1fr); gap:14px 22px; margin-top:20px; font-family:var(--mono); font-size:12.5px;}
+  @media (max-width:420px){.mstats{grid-template-columns:1fr; gap:10px;}}
   .mstats div span{display:block; color:var(--faint); font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px;}
   .progress-bar{height:4px; border-radius:3px; background:rgba(255,255,255,.08); margin-top:18px; overflow:hidden;}
   .progress-fill{height:100%; border-radius:3px; background:linear-gradient(90deg,var(--blue),var(--violet));}
@@ -175,7 +215,10 @@
   .signal-row b{color:var(--text); display:block; font-size:13px;}
 
   /* ---------- SOLAR SYSTEM ---------- */
-  .solar{position:relative; height:640px; display:flex; align-items:center; justify-content:center; margin-top:40px;}
+  .solar{position:relative; height:640px; display:flex; align-items:center; justify-content:center; margin-top:40px; overflow:hidden;}
+  @media (max-width:700px){
+    .solar{height:380px; margin-top:26px;}
+  }
   .sun{width:52px; height:52px; border-radius:50%; background:radial-gradient(circle at 35% 35%,#fff2c8,#ffb14a 60%,#9c4a12); box-shadow:0 0 60px 12px rgba(255,177,74,.55);}
   .orbit{position:absolute; border:1px solid rgba(255,255,255,.07); border-radius:50%; top:50%; left:50%;}
   .planet{
@@ -186,24 +229,36 @@
   .planet:hover .body{transform:scale(1.6);}
   .planet .plabel{position:absolute; top:16px; left:50%; transform:translateX(-50%); font-family:var(--mono); font-size:10px; color:var(--faint); white-space:nowrap; opacity:0; transition:opacity .25s;}
   .planet:hover .plabel{opacity:1;}
-  .planet-panel{position:absolute; right:0; top:0; width:300px; padding:22px; transform:translateX(20px); opacity:0; pointer-events:none; transition:all .4s cubic-bezier(.16,.8,.2,1);}
+  .planet-panel{position:absolute; right:0; top:0; width:300px; max-width:calc(100% - 24px); padding:22px; transform:translateX(20px); opacity:0; pointer-events:none; transition:all .4s cubic-bezier(.16,.8,.2,1);}
   .planet-panel.show{opacity:1; transform:translateX(0); pointer-events:auto;}
+  @media (max-width:700px){
+    .planet-panel{left:12px; right:12px; top:auto; bottom:12px; width:auto; max-width:none; transform:translateY(16px);}
+    .planet-panel.show{transform:translateY(0);}
+  }
   .planet-panel h4{font-family:var(--display); font-size:20px; margin-bottom:8px;}
   .planet-panel .pfacts{font-family:var(--mono); font-size:11.5px; color:var(--muted); display:grid; gap:8px; margin-top:14px;}
   .planet-panel .pfacts span{color:var(--faint); text-transform:uppercase; letter-spacing:.06em; font-size:9.5px; display:block;}
 
   /* ---------- DEEP SPACE TRACKER (signature) ---------- */
   .tracker-wrap{position:relative; height:560px; margin-top:50px; overflow:hidden;}
+  @media (max-width:700px){
+    .tracker-wrap{height:380px; margin-top:30px;}
+    .tracker-legend{font-size:10px; gap:12px;}
+  }
   #trackerCanvas{width:100%; height:100%; display:block;}
   .tracker-legend{position:absolute; top:20px; left:20px; display:flex; gap:18px; font-family:var(--mono); font-size:11px; color:var(--muted);}
   .tracker-tip{position:absolute; bottom:20px; right:20px; font-family:var(--mono); font-size:10.5px; color:var(--faint);}
-  .craft-panel{position:absolute; top:20px; right:20px; width:260px; padding:20px; opacity:0; transform:translateY(-10px); pointer-events:none; transition:all .35s ease;}
+  .craft-panel{position:absolute; top:20px; right:20px; width:260px; max-width:calc(100% - 24px); padding:20px; opacity:0; transform:translateY(-10px); pointer-events:none; transition:all .35s ease;}
   .craft-panel.show{opacity:1; transform:translateY(0); pointer-events:auto;}
+  @media (max-width:700px){
+    .craft-panel{left:12px; right:12px; top:auto; bottom:12px; width:auto; max-width:none; transform:translateY(16px);}
+    .craft-panel.show{transform:translateY(0);}
+  }
   .craft-panel h4{font-family:var(--display); font-size:17px;}
   .craft-panel .cfacts{font-family:var(--mono); font-size:11px; color:var(--muted); margin-top:12px; display:grid; gap:7px;}
 
   /* ---------- TIMELINE ---------- */
-  .timeline-scroll{display:flex; gap:0; overflow-x:auto; margin-top:50px; padding-bottom:26px; scrollbar-width:thin;}
+  .timeline-scroll{display:flex; gap:0; overflow-x:auto; margin-top:50px; padding-bottom:26px; scrollbar-width:thin; -webkit-overflow-scrolling:touch;}
   .tl-item{min-width:260px; padding:0 30px; position:relative; border-left:1px solid var(--panel-border);}
   .tl-item:first-child{border-left:none;}
   .tl-year{font-family:var(--mono); color:var(--blue); font-size:13px; letter-spacing:.08em;}
@@ -227,6 +282,7 @@
   /* ---------- DATA VIZ ---------- */
   .viz-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-top:50px;}
   @media (max-width:900px){.viz-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:480px){.viz-grid{grid-template-columns:1fr;}}
   .viz-card{padding:22px;}
   .viz-card .vlabel{font-family:var(--mono); font-size:10.5px; color:var(--faint); text-transform:uppercase; letter-spacing:.08em;}
   .viz-card .vnum{font-family:var(--display); font-size:34px; font-weight:600; margin:8px 0;}
@@ -285,16 +341,19 @@
 
   /* ---------- AI ASSISTANT ---------- */
   #aiToggle{
-    position:fixed; bottom:26px; right:26px; z-index:60; width:58px; height:58px; border-radius:50%;
+    position:fixed; bottom:calc(26px + env(safe-area-inset-bottom)); right:calc(26px + env(safe-area-inset-right)); z-index:60; width:58px; height:58px; border-radius:50%;
     background:linear-gradient(135deg,var(--blue),var(--violet)); border:none; cursor:pointer;
     display:flex; align-items:center; justify-content:center; box-shadow:0 8px 30px -6px rgba(76,141,255,.6);
     animation:pulseAI 3s ease-in-out infinite;
   }
   @keyframes pulseAI{0%,100%{box-shadow:0 8px 30px -6px rgba(76,141,255,.6);} 50%{box-shadow:0 8px 40px -2px rgba(155,123,255,.75);}}
   #aiPanel{
-    position:fixed; bottom:96px; right:26px; z-index:60; width:340px; max-width:88vw; height:440px;
+    position:fixed; bottom:calc(96px + env(safe-area-inset-bottom)); right:calc(26px + env(safe-area-inset-right)); left:auto; z-index:60; width:340px; max-width:88vw; height:440px; max-height:70vh;
     display:flex; flex-direction:column; opacity:0; transform:translateY(20px) scale(.97); pointer-events:none;
     transition:all .35s cubic-bezier(.16,.8,.2,1);
+  }
+  @media (max-width:500px){
+    #aiPanel{right:12px; left:12px; width:auto; max-width:none;}
   }
   #aiPanel.open{opacity:1; transform:translateY(0) scale(1); pointer-events:auto;}
   .ai-head{padding:16px 18px; border-bottom:1px solid var(--panel-border); font-family:var(--mono); font-size:12px; letter-spacing:.06em; text-transform:uppercase; display:flex; justify-content:space-between; align-items:center; color:var(--muted);}
@@ -310,7 +369,7 @@
   .ai-input button{background:none; border:none; color:var(--blue); padding:0 16px; cursor:pointer; font-family:var(--mono); font-size:12px;}
 
   /* audio toggle */
-  #audioToggle{position:fixed; bottom:26px; left:26px; z-index:60; width:44px; height:44px; border-radius:50%; border:1px solid var(--panel-border); background:rgba(10,10,14,.6); backdrop-filter:blur(10px); cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:14px; transition:all .3s;}
+  #audioToggle{position:fixed; bottom:calc(26px + env(safe-area-inset-bottom)); left:calc(26px + env(safe-area-inset-left)); z-index:60; width:44px; height:44px; border-radius:50%; border:1px solid var(--panel-border); background:rgba(10,10,14,.6); backdrop-filter:blur(10px); cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:14px; transition:all .3s;}
   #audioToggle:hover{color:var(--text); border-color:var(--blue);}
 
   .split{display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center;}
@@ -325,7 +384,7 @@
 
 <nav id="mainNav">
   <div class="logo"><span class="logo-mark"></span>PERIHELION</div>
-  <div class="navlinks">
+  <div class="navlinks" id="navLinks">
     <a href="#mission-control">Mission Control</a>
     <a href="#solar">Solar System</a>
     <a href="#fleet">Fleet</a>
@@ -333,8 +392,10 @@
     <a href="#news">News</a>
     <a href="#contact">Contact</a>
   </div>
-  <a href="#contact" class="btn btn-ghost" style="padding:10px 20px;font-size:11px;">Live Mission Control</a>
+  <a href="#contact" class="btn btn-ghost nav-cta" style="padding:10px 20px;font-size:11px;">Live Mission Control</a>
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
 </nav>
+<div class="nav-scrim" id="navScrim"></div>
 
 <!-- HERO -->
 <section class="hero">
@@ -674,6 +735,23 @@ window.addEventListener('scroll', ()=>{
   nav.classList.toggle('scrolled', window.scrollY>40);
 });
 
+/* ============ MOBILE NAV MENU ============ */
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('navLinks');
+const navScrim = document.getElementById('navScrim');
+function closeMenu(){
+  hamburger.classList.remove('open');
+  navLinks.classList.remove('open');
+  navScrim.classList.remove('open');
+}
+hamburger.addEventListener('click', ()=>{
+  const open = hamburger.classList.toggle('open');
+  navLinks.classList.toggle('open', open);
+  navScrim.classList.toggle('open', open);
+});
+navScrim.addEventListener('click', closeMenu);
+navLinks.querySelectorAll('a').forEach(a=> a.addEventListener('click', closeMenu));
+
 /* ============ REVEAL ON SCROLL ============ */
 const io = new IntersectionObserver((entries)=>{
   entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
@@ -744,42 +822,60 @@ async function runTerminal(){
 }
 runTerminal();
 
-/* ============ SOLAR SYSTEM ============ */
+/* ============ SOLAR SYSTEM (responsive) ============ */
 const solarStage = document.getElementById('solarStage');
 const planetPanel = document.getElementById('planetPanel');
-planetData.forEach((p, idx)=>{
-  const orbit = document.createElement('div');
-  orbit.className = 'orbit';
-  orbit.style.width = p.radius*2+'px';
-  orbit.style.height = p.radius*2+'px';
-  orbit.style.marginLeft = -p.radius+'px';
-  orbit.style.marginTop = -p.radius+'px';
-  solarStage.appendChild(orbit);
-
-  const wrap = document.createElement('div');
-  wrap.style.position='absolute'; wrap.style.top='50%'; wrap.style.left='50%';
-  wrap.style.width='0'; wrap.style.height='0';
-  wrap.style.animation = `spinPlanet ${p.speed}s linear infinite`;
-  wrap.style.animationDelay = (-idx*3)+'s';
-
-  const planet = document.createElement('div');
-  planet.className = 'planet';
-  planet.style.transform = `translate(${p.radius}px, 0)`;
-  const size = 8 + (idx%4)*3;
-  planet.innerHTML = `<div class="body" style="width:${size}px;height:${size}px;background:${p.color};color:${p.color}"></div><div class="plabel">${p.name}</div>`;
-  planet.addEventListener('click', ()=>{
-    planetPanel.classList.add('show');
-    planetPanel.innerHTML = `<h4>${p.name}</h4><div class="pfacts">
-      <div><span>Current Activity</span>${p.facts}</div>
-      <div><span>Orbital Radius (scaled)</span>${p.radius}px</div>
-    </div>`;
-  });
-  wrap.appendChild(planet);
-  solarStage.appendChild(wrap);
-});
+const maxBaseRadius = Math.max(...planetData.map(p=>p.radius));
 const styleTag = document.createElement('style');
 styleTag.textContent = `@keyframes spinPlanet{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}`;
 document.head.appendChild(styleTag);
+
+function buildSolar(){
+  solarStage.querySelectorAll('.orbit, .planet-wrap').forEach(n=>n.remove());
+  const availW = solarStage.clientWidth/2 - 24;
+  const availH = solarStage.clientHeight/2 - 24;
+  const scale = Math.min(1, availW/maxBaseRadius, availH/maxBaseRadius);
+
+  planetData.forEach((p, idx)=>{
+    const radius = p.radius*scale;
+    const orbit = document.createElement('div');
+    orbit.className = 'orbit';
+    orbit.style.width = radius*2+'px';
+    orbit.style.height = radius*2+'px';
+    orbit.style.marginLeft = -radius+'px';
+    orbit.style.marginTop = -radius+'px';
+    solarStage.appendChild(orbit);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'planet-wrap';
+    wrap.style.position='absolute'; wrap.style.top='50%'; wrap.style.left='50%';
+    wrap.style.width='0'; wrap.style.height='0';
+    wrap.style.animation = `spinPlanet ${p.speed}s linear infinite`;
+    wrap.style.animationDelay = (-idx*3)+'s';
+
+    const planet = document.createElement('div');
+    planet.className = 'planet';
+    planet.style.transform = `translate(${radius}px, 0)`;
+    const size = Math.max(6, (8 + (idx%4)*3) * Math.max(scale,0.6));
+    planet.innerHTML = `<div class="body" style="width:${size}px;height:${size}px;background:${p.color};color:${p.color}"></div><div class="plabel">${p.name}</div>`;
+    planet.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      planetPanel.classList.add('show');
+      planetPanel.innerHTML = `<h4>${p.name}</h4><div class="pfacts">
+        <div><span>Current Activity</span>${p.facts}</div>
+        <div><span>Orbital Radius (scaled)</span>${p.radius}px</div>
+      </div>`;
+    });
+    wrap.appendChild(planet);
+    solarStage.appendChild(wrap);
+  });
+}
+buildSolar();
+let solarResizeT;
+window.addEventListener('resize', ()=>{
+  clearTimeout(solarResizeT);
+  solarResizeT = setTimeout(buildSolar, 200);
+});
 solarStage.addEventListener('click', (e)=>{
   if(e.target===solarStage) planetPanel.classList.remove('show');
 });
@@ -796,10 +892,14 @@ function sizeTracker(){
 }
 function initTracker(){
   sizeTracker();
+  const cx = tCanvas.width/2, cy = tCanvas.height/2;
+  // largest radius must keep x-extent (radius*2.1) and y-extent (radius*1.15) within bounds
+  const maxRadiusAllowed = Math.min((cx-16)/2.1, (cy-16)/1.15);
+  const step = maxRadiusAllowed / craft.length;
   trackerObjs = craft.map((c,i)=>({
     ...c,
     angle: Math.random()*Math.PI*2,
-    radius: 60 + i*38,
+    radius: step * (i+1),
     speed: 0.0015 + Math.random()*0.001,
     trail: [],
     status: (c.name==='ARES-X')?'amber':'green'
